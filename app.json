@@ -33,6 +33,14 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "food-app-react-native",
+          "organization": "university-of-wollongong-in-du"
+        }
       ]
     ],
     "experiments": {
