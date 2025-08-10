@@ -1,4 +1,4 @@
-import { CreateUserParams, SignInParams } from "@/type";
+import { CreateUserParams, GetMenuParams, SignInParams } from "@/type";
 import {
   Account,
   Avatars,
@@ -6,6 +6,7 @@ import {
   Databases,
   ID,
   Query,
+  Storage,
 } from "react-native-appwrite";
 
 export const appwriteConfig = {
@@ -13,7 +14,12 @@ export const appwriteConfig = {
   platform: "com.ismaildx.foodordering",
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID,
   databaseId: "6884e1480000a09e949b",
+  bucketId: "6898798900188279f073",
   userCollectionId: "6884e16200228eb39fb7",
+  categoriesCollectionId: "6898762a0014d0025c79",
+  menuCollectionId: "689876b90023406d268c",
+  customizationsCollectionId: "689877f200140a5a3c85",
+  menuCustomizationsCollectionId: "689878a4002281aea45d",
 };
 
 export const client = new Client();
@@ -25,6 +31,7 @@ client
 
 export const account = new Account(client);
 export const databases = new Databases(client);
+export const storage = new Storage(client);
 const avatars = new Avatars(client);
 
 export const createUser = async ({
@@ -84,6 +91,42 @@ export const getCurrentUser = async () => {
     if (!currentUser) throw Error;
 
     return currentUser.documents[0];
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
+
+export const getMenu = async ({ category, query }: GetMenuParams) => {
+  try {
+    const queries: string[] = [];
+
+    if (category) {
+      queries.push(Query.equal("categories", category));
+    }
+    if (query) {
+      queries.push(Query.search("name", query));
+    }
+
+    const menus: any = await databases.listDocuments(
+      appwriteConfig.databaseId!,
+      appwriteConfig.menuCollectionId!,
+      queries
+    );
+
+    return menus.documents;
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
+
+export const getCategories = async () => {
+  try {
+    const categories = await databases.listDocuments(
+      appwriteConfig.databaseId!,
+      appwriteConfig.categoriesCollectionId!
+    );
+
+    return categories.documents;
   } catch (error) {
     throw new Error(error as string);
   }
